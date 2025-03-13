@@ -1,8 +1,8 @@
 pipeline {
     agent any 
     parameters {
-        choice(name: 'playbook', choices: ["install_node_app.yml"])
-        string(name: 'host', defaultValue: 'iP', trim: true)
+        choice(name: 'playbook', choices: ["ansible/install_node_app.yml"])
+        string(name: 'host', defaultValue: '54.87.119.152', trim: true)
         string(name: 'branch', defaultValue: 'main', description: 'Git branch to checkout') // Replaced 'gitParameter' with 'string'
         booleanParam(name: 'dryrun', defaultValue: true)
     }
@@ -49,5 +49,11 @@ pipeline {
                 """
             }
         }
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
     }
 }
