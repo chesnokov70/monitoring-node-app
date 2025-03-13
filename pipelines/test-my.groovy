@@ -7,6 +7,7 @@ pipeline {
         booleanParam(name: 'dryrun', defaultValue: true)
     }
     environment {
+        SSH_KEY = credentials('ssh_instance_key') // Add the credentials ID here
         GIT_URL = 'git@github.com:chesnokov70/monitoring-node-app.git'  // Defined missing variable
     }
     stages {
@@ -32,8 +33,9 @@ pipeline {
             }
             steps {
                 sh """
-                  export ANSIBLE_HOST_KEY_CHECKING=False
-                  ansible-playbook -i \"${params.host},\" ${params.playbook} --check
+                    export ANSIBLE_HOST_KEY_CHECKING=False
+                    ansible-playbook -i '${params.host},' ${params.playbook} \
+                    --private-key=\$SSH_KEY --check
                 """
             }
         }
@@ -44,8 +46,9 @@ pipeline {
             }
             steps {
                 sh """
-                  export ANSIBLE_HOST_KEY_CHECKING=False
-                  ansible-playbook -i \"${params.host},\" ${params.playbook}
+                    export ANSIBLE_HOST_KEY_CHECKING=False
+                    ansible-playbook -i '${params.host},' ${params.playbook} \
+                    --private-key=\$SSH_KEY
                 """
             }
         }
