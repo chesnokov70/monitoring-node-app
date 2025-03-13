@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     parameters {
-      choice(name: 'playbook', choices: ["nginx.yaml", "clean.yaml"])
+      choice(name: 'playbook', choices: ["install_node_app.yml"])
       string(name: 'host', defaultValue: 'iP', trim: true)
       gitParameter(name: 'branch', type: 'PT_BRANCH', sortMode: 'DESCENDING_SMART', selectedValue: 'NONE', quickFilterEnabled: true)
       booleanParam(name: 'dryrun', defaultValue: true)
@@ -9,7 +9,7 @@ pipeline {
     stages {
       stage('Checkout repo') {
         steps {
-          checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins_key', url: "$git_url"]]])
+          checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'ssh_github_access_key', url: "$git_url"]]])
         }
       }
       
