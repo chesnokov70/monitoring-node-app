@@ -28,27 +28,23 @@ pipeline {
         }
       
         stage('DryRun') {
-            when {
-                expression { params.dryrun }
-            }
+            when { expression { params.dryrun } }
             steps {
                 sh """
                     export ANSIBLE_HOST_KEY_CHECKING=False
-                    ansible-playbook -i '${params.host},' ${params.playbook} \
-                    --private-key=\$SSH_KEY --check
+                    export ANSIBLE_PRIVATE_KEY_FILE=\$SSH_KEY
+                    ansible-playbook -i '${params.host},' ${params.playbook} --check
                 """
             }
         }
 
         stage('Apply') {
-            when {
-                expression { !params.dryrun }
-            }
+            when { expression { !params.dryrun } }
             steps {
                 sh """
                     export ANSIBLE_HOST_KEY_CHECKING=False
-                    ansible-playbook -i '${params.host},' ${params.playbook} \
-                    --private-key=\$SSH_KEY
+                    export ANSIBLE_PRIVATE_KEY_FILE=\$SSH_KEY
+                    ansible-playbook -i '${params.host},' ${params.playbook}
                 """
             }
         }
