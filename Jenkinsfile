@@ -18,7 +18,7 @@ pipeline {
                     extensions: [
                         [
                             $class: 'SparseCheckoutPaths',
-                            sparseCheckoutPaths: [[path: '.']]
+                            sparseCheckoutPaths: [[path: 'monitoring-node-app']]
                         ]
                     ], 
                     userRemoteConfigs: [
