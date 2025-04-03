@@ -33,6 +33,7 @@ pipeline {
         stage ('Terraform init') {
             steps {
                 sh '''
+                sh 'pwd && ls -lah'
                 cd ./terraform/
                 terraform init -reconfigure
                 '''
