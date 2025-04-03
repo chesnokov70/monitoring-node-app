@@ -49,6 +49,7 @@ pipeline {
         stage('Apply') {
             steps {
                 sh '''
+                sh 'pwd && ls -lah'
                 cd ./terraform/
                 terraform apply terraform.tfplan
                 '''
