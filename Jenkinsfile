@@ -23,7 +23,7 @@ pipeline {
                     ], 
                     userRemoteConfigs: [
                         [
-                            url: '$git_url',
+                            url: 'git@github.com:chesnokov70/monitoring-node-app.git',
                             credentialsId: 'ssh_github_access_key' // please use your jenkins access to git
                         ]
                     ]
