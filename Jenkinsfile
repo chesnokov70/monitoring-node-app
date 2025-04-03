@@ -18,7 +18,7 @@ pipeline {
                     extensions: [
                         [
                             $class: 'SparseCheckoutPaths',
-                            sparseCheckoutPaths: [[path: 'monitoring-node-app']]
+                            sparseCheckoutPaths: [[path: '.'], [path: 'terraform'], [path: 'ansible']]
                         ]
                     ], 
                     userRemoteConfigs: [
