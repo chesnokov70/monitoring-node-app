@@ -7,6 +7,7 @@ pipeline {
         booleanParam(name: 'dryrun', defaultValue: true)
     }
     environment {
+        CREDENTIALS_ID = 'ssh_github_access_key' // Replace with your credential ID in Jenkins 
         ANSIBLE_PRIVATE_KEY_FILE = credentials('ssh_instance_key')  // Jenkins credential reference
         GIT_URL = 'git@github.com:chesnokov70/monitoring-node-app.git'  // Defined missing variable
     }
