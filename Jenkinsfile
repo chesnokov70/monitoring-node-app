@@ -32,15 +32,20 @@ pipeline {
         }
         stage ('Terraform init') {
             steps {
-                sh '''
-                pwd && ls -lah
-                cd ./terraform/
-                export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                terraform init -reconfigure
-                '''
+                withCredentials([
+                    string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh '''
+                    pwd && ls -lah
+                    if [ ! -d "./terraform" ]; then echo "Terraform directory not found!"; exit 1; fi
+                    cd ./terraform/
+                    terraform init -reconfigure
+                    '''
+                }
             }
         }
+
         stage ('Terraform plan') {
             steps {
                 sh '''
