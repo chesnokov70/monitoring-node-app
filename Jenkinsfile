@@ -1,71 +1,35 @@
 def remote = [:]
 def git_url = "git@github.com:chesnokov70/monitoring-node-app.git"
 pipeline {
-    agent any
-    tools {
-        terraform 'tf1.10.2'
+  agent any
+  parameters {
+    gitParameter (name: 'revision', type: 'PT_BRANCH')
+  }
+  environment {
+    REGISTRY = "chesnokov70/monitoring-node-app"
+    HOST = ''
+    SSH_KEY = credentials('ssh_instance_key')
+    TOKEN = credentials('hub_token')
+  }
+  stages {
+    stage('Configure credentials') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh_instance_key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
+          script {
+            remote.name = "${env.HOST}"
+            remote.host = "${env.HOST}"
+            remote.user = "$username"
+            remote.identity = readFile("$private_key")
+            remote.allowAnyHosts = true
+          }
+        }
+      }
     }
-    options {
-        ansiColor('xterm')
+    
+    stage ('Clone repo') {
+      steps {
+        checkout([$class: 'GitSCM', branches: [[name: "${revision}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'ssh_github_access_key', url: "$git_url"]]])
+      }
     }
-    stages {
-        stage('Clone Git repo Monitoring') {
-            steps {
-                checkout([
-                    $class: 'GitSCM', 
-                    branches: [[name: 'main']], 
-                    doGenerateSubmoduleConfigurations: false, 
-                    extensions: [
-                        [
-                            $class: 'SparseCheckoutPaths',
-                            sparseCheckoutPaths: [[path: '.'], [path: 'terraform'], [path: 'ansible']]
-                        ]
-                    ], 
-                    userRemoteConfigs: [
-                        [
-                            url: 'git@github.com:chesnokov70/monitoring-node-app.git',
-                            credentialsId: 'ssh_github_access_key' // please use your jenkins access to git
-                        ]
-                    ]
-                ])
-            }
-        }
-        stage ('Terraform init') {
-            steps {
-                    sh '''
-                    pwd && ls -lah
-                    if [ ! -d "./terraform" ]; then echo "Terraform directory not found!"; exit 1; fi
-                    cd ./terraform/
-                    terraform init -reconfigure
-                    '''
-            }
-        }
-
-        stage ('Terraform plan') {
-            steps {
-                sh '''
-                cd ./terraform/
-                terraform plan -out terraform.tfplan
-                '''
-            }
-        }
-        stage('Apply') {
-            steps {
-                sh '''
-                sh 'pwd && ls -lah'
-                cd ./terraform/
-                terraform apply terraform.tfplan
-                '''
-            }
-        }
-        stage('Terraform output') {
-            steps {
-                sh '''
-                cd ./terraform/
-                terraform output web-address_monitoring > ../ansible/hosts
-                '''
-            }
-        }
-
-    }
-}
+  }    
+} 
