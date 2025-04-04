@@ -7,7 +7,7 @@ pipeline {
   }
   environment {
     REGISTRY = "chesnokov70/monitoring-node-app"
-    HOST = '54.165.83.184'
+    HOST = '54.224.143.232'
     SSH_KEY = credentials('ssh_instance_key')
     TOKEN = credentials('hub_token')
   }
@@ -29,6 +29,30 @@ pipeline {
     stage ('Clone repo') {
       steps {
         checkout([$class: 'GitSCM', branches: [[name: "${revision}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'ssh_github_access_key', url: "$git_url"]]])
+      }
+    }
+
+    stage ('Build and push') {
+      steps {
+        script {
+         sh """ 
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/monitoring-node-app/ansible/* root@${HOST}:/opt/ansible
+         """
+        }
+      }
+    }
+
+    stage ('Deploy node-app') {
+      steps {
+        script {
+          sshCommand remote: remote, command: """
+          sudo apt update
+          sudo apt install -y ansible
+          ansible --version
+          cd /opt/ansible
+          ansible-playbook install_node_app.yml
+          """
+        }
       }
     }
   }    
