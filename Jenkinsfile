@@ -36,9 +36,6 @@ pipeline {
       steps {
         script {
          sh """ 
-         sudo apt update
-         sudo apt install -y ansible
-         ansible --version
          scp /var/lib/jenkins/workspace/My_Lessons_Folder/monitoring-node-app/ansible/* root@${HOST}:/opt/ansible
          """
         }
@@ -49,6 +46,9 @@ pipeline {
       steps {
         script {
           sshCommand remote: remote, command: """
+                   sudo apt update
+          sudo apt install -y ansible
+          ansible --version
           cd /opt/ansible
           ansible-playbook install_node_app.yml
           """
