@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           sshCommand remote: remote, command: """
-                   sudo apt update
+          sudo apt update
           sudo apt install -y ansible
           ansible --version
           cd /opt/ansible
