@@ -7,7 +7,7 @@ pipeline {
   }
   environment {
     REGISTRY = "chesnokov70/monitoring-node-app"
-    HOST = ''
+    HOST = '54.165.83.184'
     SSH_KEY = credentials('ssh_instance_key')
     TOKEN = credentials('hub_token')
   }
