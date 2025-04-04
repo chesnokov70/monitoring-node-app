@@ -46,6 +46,8 @@ pipeline {
       steps {
         script {
           sshCommand remote: remote, command: """
+          sudo chown jenkins:jenkins /home/ubuntu/.ssh/ssh_instance_key.pem
+          chmod 600 /home/ubuntu/.ssh/ssh_instance_key.pem
           sudo apt update
           sudo apt install -y ansible
           ansible --version
